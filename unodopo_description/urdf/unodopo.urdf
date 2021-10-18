@@ -1,5 +1,13 @@
 <?xml version = "1.0"?>
-<robot name ="unodopo" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name ="unodopo" xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+  xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find unodopo)/urdf/accessories/sick_scan.urdf.xacro"/>
+
+    <xacro:property name="wheel_offset" value="0.04" /> <!--wheel pivot offset from origin-->
+    <xacro:sick_tim_57x name="laser" ros_topic="scan" wheel_offset="${wheel_offset}" />
 
     <material name = "blue">
         <color rgba="0 0 0.8 1"/>
@@ -9,16 +17,28 @@
         <color rgba="1 1 1 1"/>
     </material>
 
+    <material name = "yellow">
+        <color rgba="1 0.964 0.321 1"/>
+    </material>
+
+    <material name ="purple">
+        <color rgba="0.933 0.321 1 1"/>
+    </material>
+
+
     <xacro:property name="base_width" value="0.44" /> 
     <xacro:property name="base_height" value="0.3" /> 
     <xacro:property name="base_depth" value="0.62" /> <!-- in m-->
     <xacro:property name="base_mass" value="5" /> <!-- in kg-->
+    
+    <xacro:property name="caster_wheel_radius" value="0.025" /> 
+    <xacro:property name="caster_wheel_mass" value="0.2" /> <!-- in kg-->
+    <xacro:property name="caster_wheel_height" value="0.015"/>
 
     <xacro:property name="wheel_radius" value="0.155" /> 
     <xacro:property name="wheel_mass" value="2.5" /> <!-- in kg-->
     <xacro:property name="wheel_height" value="0.05"/>
 
-    <xacro:property name="wheel_offset" value="0.06779" /> <!--wheeloffset-->
    
       <!-- Macro for calculating inertia of cylinder -->
     <xacro:macro name="cylinder_inertia" params="m r h">
@@ -33,19 +53,25 @@
                 izz="${m*(w*w+h*h)/12}" /> 
     </xacro:macro>
 
+    <xacro:macro name="lame_inertia">
+        <inertia ixx="0.01" ixy = "0" ixz = "0"
+                iyy="0.01" iyz = "0"
+                izz="0.01" /> 
+    </xacro:macro>
+
     <link name = "base_link">
         <visual>
             <geometry>
-               <mesh filename="package://unodopo/meshes/unodopo_body.stl" scale="0.001 0.001 0.001"/> <!-- converting from mm to m--> 
+               <mesh filename="package://unodopo/meshes/unodopo_main_body.stl" scale="0.001 0.001 0.001"/> <!-- converting from mm to m--> 
             </geometry>
             <origin xyz="0 0 -${wheel_offset}"/>
-            <material name ="blue"/> <!-- for rviz-->
+            <material name ="yellow"/> 
         </visual>
         <collision>
             <geometry>
-               <mesh filename="package://unodopo/meshes/unodopo_body.stl" scale="0.001 0.001 0.001"/> 
+               <mesh filename="package://unodopo/meshes/unodopo_main_body.stl" scale="0.001 0.001 0.001"/> 
             </geometry>
-            <origin uboidxyz="0 0 -${wheel_offset}"/>
+            <origin xyz="0 0 -${wheel_offset}"/>
         </collision>
         <inertial>
             <mass value="${base_mass}" />
@@ -93,7 +119,7 @@
             <geometry>
                <mesh filename="package://unodopo/meshes/unodopo_left_wheel.stl" scale="0.001 0.001 0.001"/> 
             </geometry>
-            <origin xyz="0 0 -${wheel_offset}"/>}"/>
+            <origin xyz="0 0 -${wheel_offset}"/>
             <material name="white"/>
         </visual>
         <collision>
@@ -118,4 +144,296 @@
        <origin xyz="0 0 0"/>
        <axis xyz="0 1 0"/>
     </joint>
+    
+<!-- lidar-->
+
+    <!-- <link name="laser_mount_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://unodopo/meshes/accessories/sick_tim571.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+            <origin xyz="0 0 -${wheel_offset}"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://unodopo/meshes/accessories/sick_tim571.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <origin xyz="0 0 -${wheel_offset}"/> 
+        </collision>
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 -${wheel_offset}"/>
+            <xacro:lame_inertia/>
+        </inertial>
+    </link>
+    <joint name="laser_joint" type="fixed">
+        <origin xyz="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="laser_mount_link"/>
+    </joint> -->
+
+<!-- caster front left-->
+
+    <link name="caster_mount_frontleft">
+        <visual>
+            <geometry>
+               <mesh filename="package://unodopo/meshes/accessories/caster_mount_frontleft.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+            <origin xyz="0.210 0.120 ${0.040-wheel_offset}"/>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <geometry>
+               <mesh filename="package://unodopo/meshes/accessories/caster_mount_frontleft.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+            <origin xyz="0.210 0.120 ${0.040-wheel_offset}"/>
+        </collision>
+        <inertial>
+            <mass value="0.1"/>
+            <origin xyz="0.210 0.120 ${0.040-wheel_offset}"/>
+            <xacro:lame_inertia/>
+        </inertial>
+    </link>
+    <gazebo reference="caster_mount_frontleft">
+        <material>Gazebo/Green</material>
+    </gazebo>
+
+    <joint name="caster_mount_frontleft_joint" type="continuous">
+       <parent link="base_link"/> 
+       <child link="caster_mount_frontleft"/>
+       <origin xyz="-0.210 -0.120 -0.040"/>
+       <axis xyz="0 0 1"/>
+    </joint>
+
+    <link name="caster_wheel_frontleft">
+        <visual>
+            <geometry>
+               <mesh filename="package://unodopo/meshes/accessories/caster_wheel_frontleft.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+            <origin xyz="0.196 0.120 ${0.07465-wheel_offset}"/>
+            <material name="purple"/>
+        </visual>
+        <collision>
+            <geometry>
+               <mesh filename="package://unodopo/meshes/accessories/caster_wheel_frontleft.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+            <origin xyz="0.196 0.120 ${0.07465-wheel_offset}"/>
+        </collision>
+        <inertial>
+            <mass value="${caster_wheel_mass}"/>
+            <origin xyz="0.196 0.120 ${0.07465-wheel_offset}"/>
+            <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_height}"/>
+        </inertial>
+    </link>
+    <gazebo reference="caster_wheel_frontleft">
+        <material>Gazebo/Blue</material>
+        <mu1 value ="0.01"/>
+        <mu2 value ="0.01"/> 
+    </gazebo>
+
+    <joint name="caster_wheel_frontleft_joint" type="continuous">
+       <parent link="caster_mount_frontleft"/> 
+       <child link="caster_wheel_frontleft"/>
+       <origin xyz="0.014874 0 ${-0.07465+wheel_offset}"/>
+       <axis xyz="0 1 0"/>
+    </joint> 
+
+<!-- caster front right-->
+
+<link name="caster_mount_frontright">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_frontright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="0.210 -0.120 ${0.040-wheel_offset}"/>
+        <material name="blue"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_frontright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="0.210 -0.120 ${0.040-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0.210 -0.120 ${0.040-wheel_offset}"/>
+        <xacro:lame_inertia/>
+    </inertial>
+</link>
+<gazebo reference="caster_mount_frontright">
+    <material>Gazebo/Green</material>
+</gazebo>
+
+<joint name="caster_mount_frontright_joint" type="continuous">
+   <parent link="base_link"/> 
+   <child link="caster_mount_frontright"/>
+   <origin xyz="-0.210 0.120 -0.040"/>
+   <axis xyz="0 0 1"/>
+</joint>
+
+<link name="caster_wheel_frontright">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_frontright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="0.196 -0.120 ${0.07465-wheel_offset}"/>
+        <material name="purple"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_frontright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="0.196 -0.120 ${0.07465-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="${caster_wheel_mass}"/>
+        <origin xyz="0.196 -0.120 ${0.07465-wheel_offset}"/>
+        <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_height}"/>
+    </inertial>
+</link>
+<gazebo reference="caster_wheel_frontright">
+    <material>Gazebo/Blue</material>
+    <mu1 value ="0.01"/>
+    <mu2 value ="0.01"/> 
+</gazebo>
+
+<joint name="caster_wheel_frontright_joint" type="continuous">
+   <parent link="caster_mount_frontright"/> 
+   <child link="caster_wheel_frontright"/>
+   <origin xyz="0.014874 0 ${-0.07465+wheel_offset}"/>
+   <axis xyz="0 1 0"/>
+</joint> 
+
+<!-- caster back right-->
+
+<link name="caster_mount_backright">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_backright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.210 -0.120 ${0.040-wheel_offset}"/>
+        <material name="blue"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_backright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.210 -0.120 ${0.040-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="0.1"/>
+        <origin xyz="-0.210 -0.120 ${0.040-wheel_offset}"/>
+        <xacro:lame_inertia/>
+    </inertial>
+</link>
+<gazebo reference="caster_mount_backright">
+    <material>Gazebo/Green</material>
+</gazebo>
+
+<joint name="caster_mount_backright_joint" type="continuous">
+   <parent link="base_link"/> 
+   <child link="caster_mount_backright"/>
+   <origin xyz="0.210 0.120 -0.040"/>
+   <axis xyz="0 0 1"/>
+</joint>
+
+<link name="caster_wheel_backright">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_backright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.224 -0.120 ${0.07465-wheel_offset}"/>
+        <material name="purple"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_backright.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.224 -0.120 ${0.07465-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="${caster_wheel_mass}"/>
+        <origin xyz="-0.224 -0.120 ${0.07465-wheel_offset}"/>
+        <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_height}"/>
+    </inertial>
+</link>
+<gazebo reference="caster_wheel_backright">
+    <material>Gazebo/Blue</material>
+    <mu1 value ="0.01"/>
+    <mu2 value ="0.01"/> 
+</gazebo>
+
+<joint name="caster_wheel_backright_joint" type="continuous">
+   <parent link="caster_mount_backright"/> 
+   <child link="caster_wheel_backright"/>
+   <origin xyz="0.014874 0 ${-0.07465+wheel_offset}"/>
+   <axis xyz="0 1 0"/>
+</joint> 
+
+<!-- caster back left-->
+
+<link name="caster_mount_backleft">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_backleft.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.210 0.120 ${0.040-wheel_offset}"/>
+        <material name="blue"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_mount_backleft.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.210 0.120 ${0.040-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="0.1"/>
+        <origin xyz="-0.210 0.120 ${0.040-wheel_offset}"/>
+        <xacro:lame_inertia/>
+    </inertial>
+</link>
+<gazebo reference="caster_mount_backleft">
+    <material>Gazebo/Green</material>
+</gazebo>
+
+<joint name="caster_mount_backleft_joint" type="continuous">
+   <parent link="base_link"/> 
+   <child link="caster_mount_backleft"/>
+   <origin xyz="0.210 -0.120 -0.040"/>
+   <axis xyz="0 0 1"/>
+</joint>
+
+<link name="caster_wheel_backleft">
+    <visual>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_backleft.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.224 0.120 ${0.07465-wheel_offset}"/>
+        <material name="purple"/>
+    </visual>
+    <collision>
+        <geometry>
+           <mesh filename="package://unodopo/meshes/accessories/caster_wheel_backleft.stl" scale="0.001 0.001 0.001"/> 
+        </geometry>
+        <origin xyz="-0.224 0.120 ${0.07465-wheel_offset}"/>
+    </collision>
+    <inertial>
+        <mass value="${caster_wheel_mass}"/>
+        <origin xyz="-0.224 0.120 ${0.07465-wheel_offset}"/>
+        <xacro:cylinder_inertia m="${caster_wheel_mass}" r="${caster_wheel_radius}" h="${caster_wheel_height}"/>
+    </inertial>
+</link>
+<gazebo reference="caster_wheel_backleft">
+    <material>Gazebo/Blue</material>
+    <mu1 value ="0.01"/>
+    <mu2 value ="0.01"/> 
+</gazebo>
+
+<joint name="caster_wheel_backleft_joint" type="continuous">
+   <parent link="caster_mount_backleft"/> 
+   <child link="caster_wheel_backleft"/>
+   <origin xyz="0.014874 0 ${-0.07465+wheel_offset}"/>
+   <axis xyz="0 1 0"/>
+</joint> 
+
 </robot>
