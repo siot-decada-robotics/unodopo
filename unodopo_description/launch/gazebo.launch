@@ -5,20 +5,31 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
+  <arg name="recording" default="false"/>
+  <arg name="teleop" default="false"/>
+
+  <!-- <arg name="world" default=""/> -->
   <arg name="model" default="$(find unodopo)/urdf/unodopo.urdf"/>
 
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <arg name="rvizconfig" default="$(find unodopo)/rviz/laser_config.rviz"/>
+
+  <!-- Gazebo empty world launch file -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- <arg name="world_name" value="$(arg world)"/>  -->
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
+    <arg name="recording" value="$(arg recording)"/>
+    
   </include>
 
+  <!-- Robot Description from URDF -->
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
-  <!-- push robot_description to factory and spawn robot in gazebo -->
+
+  <!-- Nodes-->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
         args="-z 1.0 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
 
@@ -26,7 +37,29 @@
     <param name="publish_frequency" type="double" value="30.0" />
   </node>
 
+  <node if="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  <node unless="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+  <node if="$(arg teleop)" name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/>
+
+  <!-- <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find unodopo)/cartographer_ros/configuration_files
+          -configuration_basename racer_2d.lua"
+      output="screen">
+    <remap from="scan" to="/scan_sim" />
+    <remap from="imu" to="/imu/data" /> 
+    <remap from="odom" to="/odometry/filtered" /> 
+    <remap from="points2" to="/os1_cloud_node/points" /> 
+  </node>
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args="-resolution 0.05" /> -->
+
+
+<?ignore
   <arg name="hostname" default="192.168.0.1"/>
   <arg name="cloud_topic" default="cloud"/>
   <arg name="frame_id" default="cloud"/>
@@ -48,5 +81,6 @@
       <param name="sw_pll_only_publish" type="bool" value="true"/>
       <param name="min_intensity" type="double" value="0.0"/> <!-- Set range of LaserScan messages to infinity, if intensity < min_intensity (default: 0) -->
   </node>
+?>
 
 </launch>
