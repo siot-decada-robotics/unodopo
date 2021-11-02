@@ -12,7 +12,7 @@
     </xacro:macro>
 
     <xacro:include filename="$(find unodopo)/urdf/accessories/sick_scan.urdf.xacro"/>
-    <xacro:sick_tim_57x name="laser" ros_topic="laser_scan" wheel_offset="${wheel_offset}"/>
+    <xacro:sick_tim_57x name="laser" ros_topic="laser_scan" visualize="false" wheel_offset="${wheel_offset}"/>
     <!-- <xacro:include filename="$(find unodopo)/urdf/accessories/test.xacro"/> -->
 
 
@@ -68,6 +68,15 @@
     </xacro:macro>
 
 
+    <link name="base_footprint">
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+    </link>
+
+    <joint name="base_joint" type="fixed">
+        <origin xyz="0 0 -${wheel_offset}" rpy="0 0 0"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+      </joint>
 
     <link name = "base_link">
         <visual>
