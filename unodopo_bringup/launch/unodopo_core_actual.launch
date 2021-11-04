@@ -1,0 +1,37 @@
+<launch>
+    <!-- Launch roboteq motor controller -->
+    <include file="$(find roboteq_diff_driver)/launch/driver.launch" />
+  
+    <!-- Launch two hokuyo lidars -->
+    <group ns="front_left">
+      <node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+        <param name="ip_address" value="192.168.1.10"/>
+        <param name="serial_port" value="/dev/ttyACM0"/>
+        <param name="serial_baud" value="115200"/>
+        <param name="frame_id" value="hokuyo_laser_scanner_1"/>
+        <param name="calibrate_time" value="true"/>
+        <param name="publish_intensity" value="false"/>
+        <param name="publish_multiecho" value="false"/>
+        <param name="angle_min" value="-2.35"/>
+        <param name="angle_max" value="2.35"/>
+      </node>
+    </group>
+  
+    <group ns="back_right">
+      <node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+        <param name="ip_address" value="192.168.1.11"/>
+        <param name="serial_port" value="/dev/ttyACM0"/>
+        <param name="serial_baud" value="115200"/>
+        <param name="frame_id" value="hokuyo_laser_scanner_2"/>
+        <param name="calibrate_time" value="true"/>
+        <param name="publish_intensity" value="false"/>
+        <param name="publish_multiecho" value="false"/>
+        <param name="angle_min" value="-2.356194"/>
+        <param name="angle_max" value="2.356194"/>
+      </node>
+    </group>
+    
+    <!-- Launch unodopo core -->
+    <include file="$(find unodopo_bringup)/launch/unodopo_core.launch"/>
+
+</launch>

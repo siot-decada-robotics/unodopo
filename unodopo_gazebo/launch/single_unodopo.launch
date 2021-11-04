@@ -1,0 +1,41 @@
+<!-- spawn the unodopo robot with navigation for simulations -->
+
+<launch>
+  <!-- launch file args -->
+  <arg name="x_pos" default="22.0"/>
+  <arg name="y_pos" default="-17.0"/>
+  <arg name="z_pos" default=" 2.0"/>
+  <arg name="yaw"   default=" 1.57"/>
+  <arg name="open_rviz" default="true"/>
+
+  <!-- Spawn the robot and set up multi laser merger -->
+  <include file="$(find unodopo)/launch/unodopo_gazebo.launch">
+    <arg name="robot_name" value="unodopo_0"/>
+    <arg name="x_pos" value="$(arg x_pos)"/>
+    <arg name="y_pos" value="$(arg y_pos)"/>
+    <arg name="z_pos" value="$(arg z_pos)"/>
+    <arg name="yaw" value="$(arg yaw)"/>
+  </include>
+
+  <!-- Navigation -->
+  <include file="$(find unodopo_navigation)/launch/navigation_sim.launch">
+    <arg name="bot_x_pos" value="$(arg x_pos)"/>
+    <arg name="bot_y_pos" value="$(arg y_pos)"/>
+    <arg name="bot_z_pos" value="$(arg z_pos)"/>
+    <arg name="bot_a_pos" value="$(arg yaw)"/>
+    <arg name="move_forward_only" default="true"/>
+    <arg name="cmd_vel_topic" default="cmd_vel"/>
+    <arg name="odom_topic" default="odom"/>
+    <arg name="scan_topic"     default="scan"/>
+    <arg name="set_odom_frame" default="odom"/>
+    <arg name="set_base_frame" default="base_link"/>
+    <arg name="set_map_frame"  default="map"/>
+  </include>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+  	<node pkg="rviz" type="rviz" name="rviz" required="true"
+      args="-d $(find unodopo_navigation)/rviz/navigation.rviz"/>
+  </group>
+
+</launch>

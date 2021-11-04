@@ -1,0 +1,28 @@
+<!-- For actual unodopo robot -->
+
+<launch>
+  <!-- Argument -->
+  <arg name="map_file" default="$(find caato_navigation)/maps/level10_2.yaml" />
+  <arg name="move_forward_only" default="true"/>
+
+  <include file="$(find unodopo_bringup)/launch/unodopo_core.launch" />
+
+  <!-- Launch EKF  -->
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true" >
+    <rosparam command="load" file="$(find caato_navigation)/param/ekf_caato.yaml" />
+    <remap from="odometry/filtered" to="odom"/>
+  </node>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <!-- <include file="$(find caato_navigation)/launch/amcl.launch" /> -->
+
+  <!-- move_base -->
+  <!-- TODO: create 1 move_base for each type of planner (dwa, teb, eband) -->
+  <include file="$(find unodopo_navigation)/launch/move_base_teb.launch">
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+  </include>
+
+</launch>

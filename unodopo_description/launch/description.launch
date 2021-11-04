@@ -1,8 +1,15 @@
 <launch>
-    <param name="robot_description" command="$(find xacro)/xacro --inorder 
+  <arg name="joint_state_enabled" default="true"/>
+  <arg name="robot_state_freq" default="50.0"/>
+  <arg name="robot_state_tf_prefix" default="unodopo"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder 
       '$(find unodopo)/urdf/unodopo.urdf'"/>
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
-  </launch>
+  <node if="$(arg joint_state_enabled)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="$(arg robot_state_freq)" />
+    <param name="tf_prefix" value="$(arg robot_state_tf_prefix)" />
+  </node>
+</launch>
   

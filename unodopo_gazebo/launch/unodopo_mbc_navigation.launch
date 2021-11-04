@@ -1,0 +1,27 @@
+<launch>
+  <arg name="robot_name"  default="unodopo_0"/>
+
+  <arg name="x_pos" default="22.0"/>
+  <arg name="y_pos" default="-17.0"/>
+  <arg name="z_pos" default=" 2.0"/>
+  <arg name="yaw"   default=" 1.57"/>
+  
+  <!-- Launch mbc world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find decada_sim_assets)/worlds/mbc.building.nodoors.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Spawn a single unodopo robot with navigation -->
+  <include file="$(find unodopo_gazebo)/launch/single_unodopo.launch">
+    <arg name="x_pos" value="22.0"/>
+    <arg name="y_pos" value="-17.0"/>
+    <arg name="z_pos" value=" 2.0"/>
+    <arg name="yaw"   value=" 1.57"/>
+  </include>
+
+</launch>
