@@ -10,7 +10,7 @@
       length="0.06" width="0.06" height="0.079" mass="0.150" z_offset="0.05595" visualize="${visualize}"
       min_angle="${min_angle}" max_angle="${max_angle}"
       min_range="0.05" max_range="25.0" gaussian_noise="${gaussian_noise}" samples="${samples}"
-      mesh="package://unodopo/meshes/accessories/sick_tim571.stl" 
+      mesh="package://unodopo_description/meshes/accessories/sick_tim571.stl" 
       scale="0.001 0.001 0.001"
       wheel_offset="${wheel_offset}" /> <!-- edited for unodopo-->
   </xacro:macro>

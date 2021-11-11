@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>unodopo</name>
+  <version>0.0.0</version>
+  <description>
+    ROS packages for the unodopo (meta package)
+  </description>  
+  <license>Apache 2.0</license>
+  <license>BSD</license>
+  <author email="samuelangdj@gmail.com">Samuel Ang</author>
+  <author email="djt.foo@gmail.com">Foo Jing Ting</author>
+  <maintainer email="samuelangdj@gmail.com">Samuel Ang</maintainer>
+  <maintainer email="djt.foo@gmail.com">Foo Jing Ting</maintainer>
+  <url type="repository">git@github.com:siot-decada-robotics/unodopo.git</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>unodopo_bringup</exec_depend>
+  <exec_depend>unodopo_description</exec_depend>
+  <exec_depend>unodopo_example</exec_depend>
+  <exec_depend>unodopo_navigation</exec_depend>
+  <exec_depend>unodopo_slam</exec_depend>
+  <exec_depend>unodopo_teleop</exec_depend>
+  <export><metapackage/></export>
+</package>

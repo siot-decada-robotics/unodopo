@@ -7,11 +7,13 @@
   <arg name="debug" default="false"/>
   <arg name="recording" default="false"/>
   <arg name="teleop" default="false"/>
+  <arg name="test" default="true"/>
+
 
   <!-- <arg name="world" default=""/> -->
-  <arg name="model" default="$(find unodopo)/urdf/unodopo.urdf"/>
+  <arg name="model" default="$(find unodopo_description)/urdf/unodopo.urdf"/>
 
-  <arg name="rvizconfig" default="$(find unodopo)/rviz/laser_config.rviz"/>
+  <arg name="rvizconfig" default="$(find unodopo_description)/rviz/laser_config.rviz"/>
 
   <!-- Gazebo empty world launch file -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -26,7 +28,7 @@
   </include>
 
   <!-- Robot Description from URDF -->
-  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg model)'" />
 
 
   <!-- Nodes-->
@@ -35,10 +37,11 @@
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="30.0" />
+
   </node>
 
-  <node if="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
-  <node unless="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node if="$(arg test)" name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  <node unless="$(arg test)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
