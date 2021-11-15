@@ -40,17 +40,17 @@
     <xacro:property name="base_mass" value="30" /> <!-- in kg-->
     
     <xacro:property name="caster_wheel_radius" value="0.02" /> 
-    <xacro:property name="caster_wheel_mass" value="0.3" /> <!-- in kg-->
+    <xacro:property name="caster_wheel_mass" value="0.5" /> <!-- in kg-->
     <xacro:property name="caster_wheel_height" value="0.02"/>
 
     <xacro:property name="wheel_radius" value="0.155" /> 
     <xacro:property name="wheel_mass" value="5" /> <!-- in kg-->
     <xacro:property name="wheel_height" value="0.05"/>
     <xacro:property name="wheel_separation" value="0.32"/>
-    <xacro:property name="wheel_friction" value="0.5"/>
+    <xacro:property name="wheel_friction" value="1"/>
 
-    <xacro:property name="caster_wheel_friction" value="0.5"/>
-    <xacro:property name="caster_mount_friction" value="0.1"/>
+    <xacro:property name="caster_wheel_friction" value="0.1"/>
+    <xacro:property name="caster_mount_friction" value="0.3"/>
 
 
    
@@ -74,8 +74,8 @@
 
     <joint name="base_joint" type="fixed">
         <origin xyz="0 0 -${wheel_offset}" rpy="0 0 0"/>
-        <parent link="base_footprint"/>
-        <child link="base_link"/>
+        <parent link="base_link"/>
+        <child link="base_footprint"/>
       </joint>
 
     <link name = "base_link">
@@ -142,7 +142,7 @@
     <joint name="right_wheel_joint" type ="continuous">
         <parent link ="base_link"/>
         <child link="right_wheel"/>
-        <origin xyz="0 0 0.01"/>
+        <origin xyz="0 0 0.004"/>
         <axis xyz="0 1 0"/>
     </joint>
 
@@ -180,7 +180,7 @@
     <joint name="left_wheel_joint" type="continuous">
        <parent link="base_link"/> 
        <child link="left_wheel"/>
-        <origin xyz="0 0 0.01"/>
+        <origin xyz="0 0 0.004"/>
        <axis xyz="0 1 0"/>
     </joint>
     
@@ -260,7 +260,7 @@
         </visual>
         <collision>
             <geometry>
-                <cylinder length="0.02" radius="0.02"/>            
+                <cylinder length="0.02" radius="0.025"/>            
             </geometry>
             <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
         </collision>
@@ -338,7 +338,7 @@
     </visual>
     <collision>
         <geometry>
-            <cylinder length="0.02" radius="0.02"/>            
+            <cylinder length="0.02" radius="0.025"/>            
         </geometry>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
     </collision>
@@ -414,7 +414,7 @@
     </visual>
     <collision>
         <geometry>
-            <cylinder length="0.02" radius="0.02"/>            
+            <cylinder length="0.02" radius="0.025"/>            
         </geometry>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
     </collision>
@@ -492,7 +492,7 @@
     </visual>
     <collision>
         <geometry>
-            <cylinder length="0.02" radius="0.02"/>            
+            <cylinder length="0.02" radius="0.025"/>            
         </geometry>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
     </collision>
